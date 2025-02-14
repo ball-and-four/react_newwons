@@ -40,7 +40,6 @@ const Create = () => {
   const [attachment, setAttachment] = useState('');
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAttachment(e.target.value);
     const { files } = e.target;
     if (!files || files.length === 0) return;
 
@@ -142,7 +141,7 @@ const Create = () => {
         </div>
         {attachment && (
           <div className={styles.preview}>
-            <Image src={attachment} alt="PostImg" />
+            <Image src={attachment} alt="PostImg" width={500} height={300} />
             <div onClick={onClearAttachment} className={styles.removeButton}>
               <span>Remove</span>
             </div>

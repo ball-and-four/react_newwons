@@ -4,6 +4,7 @@ import { app } from '@/firebase';
 import { isLoggedIn, logout, useUserInfo } from '@/utils/auth';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -52,7 +53,7 @@ const Header = () => {
   const [userProfile, setUserProfile] = useState('');
   const currentLoggedState = isLoggedIn();
   const { isLogged = false, userName } = useUserInfo({ currentLoggedState });
-
+  const router = useRouter();
   useEffect(() => {
     const auth = getAuth(app);
 
@@ -71,6 +72,7 @@ const Header = () => {
   const handleClickLogout = () => {
     if (isLogged) {
       logout();
+      router.push('/');
     } else {
     }
   };
