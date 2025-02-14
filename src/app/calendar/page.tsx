@@ -63,7 +63,7 @@ const Calendar = () => {
       };
 
       calendarApi.addEvent(newEvent);
-
+      console.log(newEvent.id);
       try {
         await addDoc(collection(db, 'calendar'), newEvent);
       } catch (error) {
@@ -95,7 +95,6 @@ const Calendar = () => {
             start: event.start?.toISOString(),
             end: event.end?.toISOString(),
           });
-          console.log(event.start?.toISOString());
         }
       });
     } catch (error) {
