@@ -1,36 +1,38 @@
 'use client';
+
 import { useAuth } from '@/contexts/AuthContext';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import ModalPortal from './ModalPortal';
 
 const Modal = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
-  const [modalVisible, setModalVisible] = useState({ isLoading });
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    if (!user || null) {
-      setModalVisible({ isLoading: true });
+    if (!isLoading) {
+      setModalVisible(user == null); // user가 null 또는 undefined면 true
     }
-  }, [user]);
+  }, [user, isLoading]);
 
   const handleClose = () => {
-    if (!user || null) {
-      // console.log('비로그인 상태에서는 닫히지 않도록');
-      return;
-    } else {
-      setModalVisible({ isLoading: false });
-    }
+    if (!user) return; // 비로그인 상태에서는 모달을 닫지 않음
+    setModalVisible(false);
   };
 
+  if (!modalVisible) return null; // 모달이 보이지 않으면 렌더링하지 않음
+
   return (
-    <DimmedField className={modalVisible ? 'show' : ''} onClick={handleClose}>
-      <ModalField
-        className={modalVisible ? 'show' : ''}
-        onClick={(e: React.SyntheticEvent) => e.stopPropagation()}
-      >
-        {children}
-      </ModalField>
-    </DimmedField>
+    <ModalPortal>
+      <DimmedField className={modalVisible ? 'show' : ''} onClick={handleClose}>
+        <ModalField
+          className={modalVisible ? 'show' : ''}
+          onClick={(e: React.SyntheticEvent) => e.stopPropagation()}
+        >
+          {children}
+        </ModalField>
+      </DimmedField>
+    </ModalPortal>
   );
 };
 
