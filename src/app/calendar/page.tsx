@@ -8,6 +8,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { useEffect, useState } from 'react';
 
 import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { HexColorPicker } from 'react-colorful';
 import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../firebase';
 import { createEventId } from '../../utils/calendar';
@@ -144,10 +145,19 @@ const Calendar = () => {
     fetchEvents();
   }, []);
 
+  const [pickColor, setPickColor] = useState('#aabbcc');
+  const handleChangeColor = () => {
+    userColors[`${userEmail}`] = `${pickColor}`;
+    console.log(userColors);
+  };
+
   return (
     <div className={styles.calendarContainer}>
       <Sidebar weekendsVisible={weekendsVisible} handleWeekendsToggle={handleWeekendsToggle} />
-
+      <div>
+        사용하실 컬러를 선택해 주세요!
+        <HexColorPicker color={pickColor} onClick={handleChangeColor} onChange={setPickColor} />;
+      </div>
       <div className={styles.calendarWrapper}>
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
