@@ -1,14 +1,13 @@
 'use client';
-
+import Modal from '@/components/common/Modal';
+import ColorPicker from '@/components/feature/ColorPicker';
 import { DateSelectArg, EventClickArg, EventContentArg, EventDropArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { EventResizeDoneArg } from '@fullcalendar/interaction';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-
-import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
-import { HexColorPicker } from 'react-colorful';
 import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../firebase';
 import { createEventId } from '../../utils/calendar';
@@ -25,30 +24,56 @@ interface CalendarEvent {
   backgroundColor?: string;
 }
 
-// ✅ 각자의 아이디와 원하는 색상코드를 입력해주세용~!
-const userColors: Record<string, string> = {
-  'beingnami2023@gmail.com': '#3aa18c',
-  'eunyjin.family@gmail.com': '#FFB2B2',
-  'hasyory@gmail.com': 'babypink',
-  'seoramyeon@gmail.com': '#a9f5d0',
-  'sujinjo405@gmail.com': '#ff33f4',
-  default: '#888888', // 기본 회색
-};
-
 const Calendar = () => {
   const { user } = useAuth();
-  const userEmail = user?.email || 'default';
+  const getEmailIdPattern = /^[^@]+/;
+
+  const userEmailId = user?.email?.match(getEmailIdPattern)?.[0] || '';
+
   const [weekendsVisible, setWeekendsVisible] = useState<boolean>(true);
   const [currentEvents, setCurrentEvents] = useState<CalendarEvent[]>([]);
-
+  const [userColorList, setUserColorList] = useState<Record<string, string>>({});
+  const [showModal, setShowModal] = useState(false);
   const handleWeekendsToggle = () => {
     setWeekendsVisible(!weekendsVisible);
   };
 
+  useEffect(() => {
+    const fetchUserColors = async () => {
+      console.log('01. DB -> =userColorList= 값 삽입');
+      try {
+        const docRef = doc(db, 'userColors', 'list');
+        const docSnap = await getDoc(docRef);
+        const userColors = docSnap.data();
+        if (userColors) {
+          setUserColorList(userColors as Record<string, string>);
+          console.log('01-1. =userColorList=', userColorList);
+          console.log('01-2. =userColorList[userEmailId]=', userColorList[userEmailId]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUserColors();
+  }, []);
+
+  useEffect(() => {
+    console.log('02. 모달 useEffect 실행');
+    if (userColorList && Object.keys(userColorList).length > 0) {
+      if (userColorList[userEmailId]) {
+        console.log('02-1. 이미 값이 있음');
+        setShowModal(false);
+      } else {
+        console.log('02-2. 값이 없어서 모달 띄움');
+        setShowModal(true);
+      }
+    }
+  }, [userColorList]);
+
   const handleDateSelect = async (selectInfo: DateSelectArg) => {
     const title = prompt('새로운 이벤트 제목을 입력하세요');
     const calendarApi = selectInfo.view.calendar;
-    const userColor = userColors[userEmail] || userColors.default;
+
     calendarApi.unselect();
 
     if (title) {
@@ -60,7 +85,7 @@ const Calendar = () => {
         allDay: selectInfo.allDay,
         author: user?.displayName,
         authorEmail: user?.email,
-        backgroundColor: userColor,
+        backgroundColor: userColorList[userEmailId] || '',
       };
 
       calendarApi.addEvent(newEvent);
@@ -133,7 +158,7 @@ const Calendar = () => {
             allDay: eventData.allDay,
             author: eventData.author ?? null,
             authorEmail: eventData.authorEmail ?? null,
-            backgroundColor: userColors[eventData.authorEmail] || userColors.default,
+            backgroundColor: userColorList[userEmailId] || '',
           };
         });
         setCurrentEvents(events);
@@ -143,68 +168,78 @@ const Calendar = () => {
     };
 
     fetchEvents();
-  }, []);
-
-  const [pickColor, setPickColor] = useState('#aabbcc');
-  const handleChangeColor = () => {
-    userColors[`${userEmail}`] = `${pickColor}`;
-    console.log(userColors);
-  };
+  }, [userColorList]);
 
   return (
-    <div className={styles.calendarContainer}>
-      <Sidebar weekendsVisible={weekendsVisible} handleWeekendsToggle={handleWeekendsToggle} />
-      <div>
-        사용하실 컬러를 선택해 주세요!
-        <HexColorPicker color={pickColor} onClick={handleChangeColor} onChange={setPickColor} />;
-      </div>
-      <div className={styles.calendarWrapper}>
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay',
+    <>
+      <Modal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+        }}
+      >
+        <ColorPicker
+          onClose={() => {
+            setShowModal(false);
+            console.log('컬러픽 선택하기', showModal);
           }}
-          initialView="dayGridMonth"
-          editable={true}
-          selectable={true}
-          selectMirror={true}
-          dayMaxEvents={true}
-          events={currentEvents}
-          weekends={weekendsVisible}
-          select={handleDateSelect}
-          eventContent={renderEventContent}
-          eventClick={handleEventClick}
-          eventDrop={handleEventDrop}
-          eventResize={handleEventResize}
         />
+      </Modal>
+      <div className={styles.calendarContainer}>
+        <Sidebar weekendsVisible={weekendsVisible} handleWeekendsToggle={handleWeekendsToggle} />
+        <div className={styles.calendarWrapper}>
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay',
+            }}
+            initialView="dayGridMonth"
+            editable={true}
+            selectable={true}
+            selectMirror={true}
+            dayMaxEvents={true}
+            events={currentEvents}
+            weekends={weekendsVisible}
+            select={handleDateSelect}
+            eventContent={renderEventContent}
+            eventClick={handleEventClick}
+            eventDrop={handleEventDrop}
+            eventResize={handleEventResize}
+          />
+        </div>
       </div>
+    </>
+  );
+};
+
+const EventContent = ({ eventInfo }: { eventInfo: EventContentArg }) => {
+  console.log(eventInfo);
+  return (
+    <div
+      style={{
+        backgroundColor: eventInfo.event.backgroundColor,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <b className={styles.blind}>{eventInfo.timeText}</b>
+      <i>{eventInfo.event.title}&nbsp;&nbsp;</i>
+      <small>{eventInfo.event.extendedProps.author}</small>
     </div>
   );
 };
 
-const EventContent = ({ eventInfo }: { eventInfo: EventContentArg }) => (
-  <div
-    style={{
-      backgroundColor: eventInfo.event.backgroundColor,
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    }}
-  >
-    <b className={styles.blind}>{eventInfo.timeText}</b>
-    <i>{eventInfo.event.title}&nbsp;&nbsp;</i>
-    <small>{eventInfo.event.extendedProps.author}</small>
-  </div>
-);
-
-// FullCalendar에서 사용
 const renderEventContent = (eventInfo: EventContentArg) => {
-  return <EventContent eventInfo={eventInfo} />;
+  return (
+    <>
+      <EventContent eventInfo={eventInfo} />
+    </>
+  );
 };
 
-/** 사이드바 */
 const Sidebar = ({
   weekendsVisible,
   handleWeekendsToggle,

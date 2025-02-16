@@ -1,33 +1,26 @@
 'use client';
 
-import { useAuth } from '@/contexts/AuthContext';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import ModalPortal from './ModalPortal';
 
-const Modal = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuth();
-  const [modalVisible, setModalVisible] = useState(false);
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}
 
-  useEffect(() => {
-    if (!isLoading) {
-      setModalVisible(user == null); // user가 null 또는 undefined면 true
-    }
-  }, [user, isLoading]);
-
-  const handleClose = () => {
-    if (!user) return; // 비로그인 상태에서는 모달을 닫지 않음
-    setModalVisible(false);
-  };
-
-  if (!modalVisible) return null; // 모달이 보이지 않으면 렌더링하지 않음
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
 
   return (
     <ModalPortal>
-      <DimmedField className={modalVisible ? 'show' : ''} onClick={handleClose}>
+      <DimmedField className={isOpen ? 'show' : ''} onClick={onClose}>
+        {' '}
+        {/* ✅ 바깥 클릭하면 닫힘 */}
         <ModalField
-          className={modalVisible ? 'show' : ''}
-          onClick={(e: React.SyntheticEvent) => e.stopPropagation()}
+          className={isOpen ? 'show' : ''}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
         >
           {children}
         </ModalField>
@@ -44,6 +37,7 @@ const DimmedField = styled.div`
   height: 100%;
   background: rgba(0, 0, 0, 0);
   opacity: 0;
+  z-index: 1;
   transition:
     opacity 0.3s ease-in-out,
     background 0.3s ease-in-out;
@@ -60,7 +54,6 @@ const ModalField = styled.div`
   left: 50%;
   transform: translate(-50%, -50%) scale(0.9);
   width: 400px;
-  height: 400px;
   background: white;
   border-radius: 4%;
   opacity: 0;
