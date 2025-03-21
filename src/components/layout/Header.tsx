@@ -17,6 +17,7 @@ const HeaderBox = styled.div`
   padding: 14px 80px;
   background: #fff;
   z-index: 10;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 `;
 
 const Nav = styled.nav`
@@ -27,7 +28,7 @@ const Nav = styled.nav`
 const List = styled.ul`
   display: flex;
   align-items: center;
-  gap: 55px;
+  gap: 32px;
   list-style: none;
 `;
 
@@ -35,7 +36,7 @@ const Item = styled.li`
   list-style: none;
   font-size: 15px;
   font-weight: 500;
-  color: #18a0fb;
+  color: #222;
 
   a:hover {
     text-decoration: underline;
@@ -43,10 +44,10 @@ const Item = styled.li`
 `;
 
 const Profile = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 25px;
-  margin-right: 5px;
+  margin-right: 8px;
 `;
 
 const Header = () => {
@@ -82,7 +83,7 @@ const Header = () => {
     <HeaderBox>
       <Logo />
       {isLogged ? (
-        <div style={{ display: 'flex', gap: '50px' }}>
+        <div style={{ display: 'flex', gap: '24px' }}>
           <Nav>
             <List>
               <Item>
@@ -91,13 +92,23 @@ const Header = () => {
               <Item>
                 <Link href={'/calendar'}>Calendar</Link>
               </Item>
+              <Item>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Profile src={userProfile} />
+                  {userName}
+                </div>
+              </Item>
+              <Item>
+                <button onClick={handleClickLogout}>LOGOUT</button>
+              </Item>
             </List>
           </Nav>
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-            <Profile src={userProfile} />
-            {userName}
-            <button onClick={handleClickLogout}>LOGOUT</button>
-          </div>
         </div>
       ) : null}
     </HeaderBox>
