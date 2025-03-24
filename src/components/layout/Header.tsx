@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import Icon from '../common/Icon';
 
 const HeaderBox = styled.div`
   position: fixed;
@@ -33,20 +34,26 @@ const List = styled.ul`
 `;
 
 const Item = styled.li`
-  list-style: none;
   font-size: 15px;
   font-weight: 500;
-  color: #222;
+  color: var(--color-gray-04);
+  display: flex;
 
-  a:hover {
-    text-decoration: underline;
+  a {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+
+    &:hover {
+      color: var(--color-gray-01);
+    }
   }
 `;
 
 const Profile = styled.img`
-  width: 40px;
-  height: 40px;
-  border-radius: 25px;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
   margin-right: 8px;
 `;
 
@@ -60,7 +67,7 @@ const Header = () => {
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUserProfile(`${user.displayName}`);
+        // setUserProfile(`${user.displayName}`);
         setUserProfile(`${user.photoURL}`);
       } else {
         setUserProfile('');
@@ -87,10 +94,23 @@ const Header = () => {
           <Nav>
             <List>
               <Item>
-                <Link href={'/posts/create'}>Write</Link>
+                <Link href={'/posts/create'}>
+                  <Icon type="write" />
+                  Write
+                </Link>
               </Item>
               <Item>
-                <Link href={'/calendar'}>Calendar</Link>
+                <Link href={'/calendar'}>
+                  <Icon type="calendar" />
+                  Calendar
+                </Link>
+              </Item>
+
+              <Item>
+                <Link href={''} onClick={handleClickLogout}>
+                  Logout
+                </Link>
+                {/* <button onClick={handleClickLogout}>Logout</button> */}
               </Item>
               <Item>
                 <div
@@ -100,12 +120,8 @@ const Header = () => {
                     alignItems: 'center',
                   }}
                 >
-                  <Profile src={userProfile} />
-                  {userName}
+                  <Profile src={userProfile} alt={`${userName} profile image`} />
                 </div>
-              </Item>
-              <Item>
-                <button onClick={handleClickLogout}>LOGOUT</button>
               </Item>
             </List>
           </Nav>

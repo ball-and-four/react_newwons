@@ -12,7 +12,7 @@ const PostBreadCrumb = styled.ul`
 
   li {
     padding: 0;
-    font-size: 18px;
+    font-size: 15px;
     color: rgba(0, 0, 0, 0.5);
 
     &:after {
@@ -36,8 +36,8 @@ const PostBreadCrumb = styled.ul`
 `;
 
 const PostTitle = styled.h3`
-  font-size: 48px;
-  padding: 20px 0 10px;
+  font-size: 42px;
+  padding: 16px 0;
 `;
 
 const PostInfo = styled.ul`
@@ -59,11 +59,11 @@ const PostInfo = styled.ul`
     }
 
     &.lightBlue {
-      color: #6de4ea;
+      color: var(--color-lightBlue);
     }
 
     &.blue {
-      color: #18a0fb;
+      color: var(--color-blue);
     }
 
     &:last-child {
@@ -76,7 +76,7 @@ export const PostInfoGroup = ({ title, author, category, timestamp, href }: Post
   return (
     <>
       <PostBreadCrumb>
-        <li className="lightBlue">
+        <li>
           <Link href="/">Home</Link>
         </li>
         <li>
@@ -85,9 +85,9 @@ export const PostInfoGroup = ({ title, author, category, timestamp, href }: Post
       </PostBreadCrumb>
       <PostTitle>{title}</PostTitle>
       <PostInfo>
-        <li className="lightBlue">{author}</li>
-        <li className="blue">{category}</li>
+        <li className="blue">{author}</li>
         <li>{timestamp}</li>
+        <li>{category}</li>
       </PostInfo>
     </>
   );

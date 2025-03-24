@@ -41,27 +41,31 @@ export const PostCardList = () => {
   return (
     <ListContainer>
       {docList.map((post) => (
-        <PostCard
-          key={post.param}
-          param={post.param}
-          author={post.author}
-          category={post.category}
-          timestamp={post.timestamp}
-          thumbnail={post.thumbnail}
-          postTitle={post.postTitle}
-          postContent={post.postContent}
-        />
+        <li key={post.param}>
+          <PostCard
+            param={post.param}
+            author={post.author}
+            category={post.category}
+            timestamp={post.timestamp}
+            thumbnail={post.thumbnail}
+            postTitle={post.postTitle}
+            postContent={post.postContent}
+          />
+        </li>
       ))}
     </ListContainer>
   );
 };
 
-const ListContainer = styled.div`
-  width: 1080px;
-  margin: auto;
-  padding: 140px 0 60px 16px;
-  display: flex;
-  flex-wrap: wrap;
+const ListContainer = styled.ul`
+  list-style: none;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 140px auto;
+  padding: 0 0 80px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 400px);
   gap: 2rem;
   flex: 1;
+  justify-content: center;
 `;
