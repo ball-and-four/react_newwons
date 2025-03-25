@@ -1,8 +1,9 @@
 'use client';
-import Logo from '@/components/common/Logo';
+import lottieJson from '@/assets/lotties/lottieLogo.json';
 import { app } from '@/firebase';
 import { isLoggedIn, logout, useUserInfo } from '@/utils/auth';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -15,7 +16,7 @@ const HeaderBox = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding: 14px 80px;
+  padding: 11px 80px;
   background: #fff;
   z-index: 10;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
@@ -62,6 +63,8 @@ const Header = () => {
   const currentLoggedState = isLoggedIn();
   const { isLogged = false, userName } = useUserInfo({ currentLoggedState });
   const router = useRouter();
+  const LottiePlayer = dynamic(() => import('react-lottie-player'), { ssr: false });
+
   useEffect(() => {
     const auth = getAuth(app);
 
@@ -88,7 +91,9 @@ const Header = () => {
     //로그인 안했을때 아무것도 없음.
     //로그인 했을때 헤더 노출 + 로그아웃 버튼
     <HeaderBox>
-      <Logo />
+      {/* <Logo /> */}
+      {/* 로고애니 테스트 */}
+      <LottiePlayer loop animationData={lottieJson} play />
       {isLogged ? (
         <div style={{ display: 'flex', gap: '24px' }}>
           <Nav>
