@@ -1,5 +1,4 @@
 'use client';
-import { Button } from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import PostInfoGroup from '@/components/feature/PostInfoGroup';
 import { db, storage } from '@/firebase';
@@ -131,7 +130,7 @@ const Create = () => {
           />
           <input
             type="text"
-            style={{ width: '100%' }}
+            style={{ width: '100%', padding: '0 16px' }}
             defaultValue={attachment}
             placeholder="첨부파일"
           />
@@ -152,7 +151,7 @@ const Create = () => {
 
         <button onClick={handleClickCreatePosts}>작성하기 임시버튼</button>
         <br />
-        <Button />
+        {/* <Button /> */}
       </div>
     </div>
   );

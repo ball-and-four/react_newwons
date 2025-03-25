@@ -1,11 +1,13 @@
 .postContainer {
-  width: 1000px;
+  width: 100%;
+  max-width: var(--max-width);
   flex: 1;
   margin: 80px auto;
-  padding-top: 80px;
+  padding: 80px 50px 0;
 }
 .postContent {
-  margin: 40px 0 80px;
+  margin: 56px 0 80px;
   width: 100%;
-  font-size: 15px;
+  font-size: 18px;
+  color: var(--color-gray-02);
 }
