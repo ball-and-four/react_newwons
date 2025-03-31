@@ -111,7 +111,13 @@ const Detail = () => {
           src={`${postData.postFile}`}
           width="500"
           height="300"
-          style={{ width: '100%', maxWidth: '500px', height: 'auto', textAlign: 'center' }}
+          style={{
+            width: '100%',
+            maxWidth: '500px',
+            height: 'auto',
+            textAlign: 'center',
+            marginTop: '56px',
+          }}
           alt="PostImg"
         />
       )}

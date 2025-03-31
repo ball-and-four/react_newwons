@@ -1,36 +1,31 @@
 'use client';
-import { useAuth } from '@/contexts/AuthContext';
-import React, { useEffect, useState } from 'react';
+
+import React from 'react';
 import styled from 'styled-components';
+import ModalPortal from './ModalPortal';
 
-const Modal = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuth();
-  const [modalVisible, setModalVisible] = useState({ isLoading });
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}
 
-  useEffect(() => {
-    if (!user || null) {
-      setModalVisible({ isLoading: true });
-    }
-  }, [user]);
-
-  const handleClose = () => {
-    if (!user || null) {
-      // console.log('비로그인 상태에서는 닫히지 않도록');
-      return;
-    } else {
-      setModalVisible({ isLoading: false });
-    }
-  };
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
 
   return (
-    <DimmedField className={modalVisible ? 'show' : ''} onClick={handleClose}>
-      <ModalField
-        className={modalVisible ? 'show' : ''}
-        onClick={(e: React.SyntheticEvent) => e.stopPropagation()}
-      >
-        {children}
-      </ModalField>
-    </DimmedField>
+    <ModalPortal>
+      <DimmedField className={isOpen ? 'show' : ''} onClick={onClose}>
+        {' '}
+        {/* ✅ 바깥 클릭하면 닫힘 */}
+        <ModalField
+          className={isOpen ? 'show' : ''}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        >
+          {children}
+        </ModalField>
+      </DimmedField>
+    </ModalPortal>
   );
 };
 
@@ -42,6 +37,7 @@ const DimmedField = styled.div`
   height: 100%;
   background: rgba(0, 0, 0, 0);
   opacity: 0;
+  z-index: 1;
   transition:
     opacity 0.3s ease-in-out,
     background 0.3s ease-in-out;
@@ -58,7 +54,6 @@ const ModalField = styled.div`
   left: 50%;
   transform: translate(-50%, -50%) scale(0.9);
   width: 400px;
-  height: 400px;
   background: white;
   border-radius: 4%;
   opacity: 0;

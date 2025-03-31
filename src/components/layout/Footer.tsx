@@ -54,7 +54,7 @@ const Footer = () => {
         </Item>
       </CorpList> */}
 
-      <CopyRight>© Your Company 2024. We love you!</CopyRight>
+      <CopyRight>©JOJOSONBITNA. All Rights Reserved</CopyRight>
     </FooterBox>
   );
 };

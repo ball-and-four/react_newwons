@@ -36,7 +36,7 @@ const LayoutContent = ({ children }: { children: React.ReactNode }) => {
       {children}
       <Footer />
       {!user && (
-        <Modal>
+        <Modal isOpen={true} onClose={() => {}}>
           <Login />
         </Modal>
       )}
