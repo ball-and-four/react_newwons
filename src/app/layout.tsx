@@ -36,7 +36,7 @@ const LayoutContent = ({ children }: { children: React.ReactNode }) => {
       {children}
       <Footer />
       {!user && (
-        <Modal>
+        <Modal isOpen={true} onClose={() => {}}>
           <Login />
         </Modal>
       )}
@@ -60,7 +60,6 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
             </AuthProvider>
           </StyledComponentsRegistry>
         </div>
-        <div id="modal-root"></div>
       </body>
     </html>
   );
