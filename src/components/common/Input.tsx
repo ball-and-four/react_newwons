@@ -1,22 +1,23 @@
 'use client';
 
-import { ChangeEventHandler, HTMLInputTypeAttribute } from 'react';
+import { ChangeEventHandler, InputHTMLAttributes } from 'react';
 import styled from 'styled-components';
 
-type InputProps = {
+type BaseInputProps = {
   id?: string;
-  type: HTMLInputTypeAttribute | undefined;
-  value?: string | readonly string[] | number | undefined;
+  type: string;
+  value?: string | readonly string[] | number;
   title?: string;
   placeholder?: string;
   disabled?: boolean;
   className?: string;
-  Color?: string;
   accept?: string;
-  onChange?: ChangeEventHandler | undefined;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
 };
 
-//Type, Title, Placeholder, Disabled, ClassName 파라미터: 앞에 일반적으로 소문자 합성어면 증간에 대문자
+type InputProps = BaseInputProps &
+  Omit<InputHTMLAttributes<HTMLInputElement>, keyof BaseInputProps>;
+
 function Input({
   id,
   accept,
@@ -27,21 +28,21 @@ function Input({
   disabled,
   className,
   onChange,
+  ...rest
 }: InputProps) {
   return (
-    <>
-      <InputField
-        id={id}
-        accept={accept}
-        type={type} //텍스트만 받을거니(ex.체크박스나.레이블같은)까 따로 정의 필요없음
-        value={value}
-        title={title}
-        placeholder={placeholder}
-        disabled={disabled}
-        className={className}
-        onChange={onChange}
-      ></InputField>
-    </>
+    <InputField
+      id={id}
+      accept={accept}
+      type={type}
+      value={value}
+      title={title}
+      placeholder={placeholder}
+      disabled={disabled}
+      className={className}
+      onChange={onChange}
+      {...rest}
+    />
   );
 }
 
@@ -55,5 +56,3 @@ const InputField = styled.input`
 `;
 
 export default Input;
-
-//깃풀받고 내꺼 머지하고 머지할때?분기해서 올리기 톡방 참고 머지할땐 리드미 참고!

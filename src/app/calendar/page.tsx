@@ -1,4 +1,5 @@
 'use client';
+import Input from '@/components/common/Input';
 import Modal from '@/components/common/Modal';
 import ColorPicker from '@/components/feature/ColorPicker';
 import { DateSelectArg, EventClickArg, EventContentArg, EventDropArg } from '@fullcalendar/core';
@@ -34,26 +35,26 @@ const Calendar = () => {
   const [currentEvents, setCurrentEvents] = useState<CalendarEvent[]>([]);
   const [userColorList, setUserColorList] = useState<Record<string, string>>({});
   const [showModal, setShowModal] = useState(false);
+
   const handleWeekendsToggle = () => {
     setWeekendsVisible(!weekendsVisible);
   };
 
-  useEffect(() => {
-    const fetchUserColors = async () => {
-      console.log('01. DB -> =userColorList= 값 삽입');
-      try {
-        const docRef = doc(db, 'userColors', 'list');
-        const docSnap = await getDoc(docRef);
-        const userColors = docSnap.data();
-        if (userColors) {
-          setUserColorList(userColors as Record<string, string>);
-          console.log('01-1. =userColorList=', userColorList);
-          console.log('01-2. =userColorList[userEmailId]=', userColorList[userEmailId]);
-        }
-      } catch (error) {
-        console.log(error);
+  const fetchUserColors = async () => {
+    try {
+      const docRef = doc(db, 'userColors', 'list');
+      const docSnap = await getDoc(docRef);
+      const userColors = docSnap.data();
+
+      if (userColors) {
+        setUserColorList(userColors as Record<string, string>);
       }
-    };
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
     fetchUserColors();
   }, []);
 
@@ -89,7 +90,7 @@ const Calendar = () => {
       };
 
       calendarApi.addEvent(newEvent);
-      console.log(newEvent.id);
+
       try {
         await addDoc(collection(db, 'calendar'), newEvent);
       } catch (error) {
@@ -150,6 +151,8 @@ const Calendar = () => {
         const querySnapshot = await getDocs(collection(db, 'calendar'));
         const events: CalendarEvent[] = querySnapshot.docs.map((doc) => {
           const eventData = doc.data();
+          const authorEmailId = eventData.authorEmail?.match(getEmailIdPattern)?.[0] || '';
+
           return {
             id: eventData.id,
             title: eventData.title,
@@ -158,7 +161,7 @@ const Calendar = () => {
             allDay: eventData.allDay,
             author: eventData.author ?? null,
             authorEmail: eventData.authorEmail ?? null,
-            backgroundColor: userColorList[userEmailId] || '',
+            backgroundColor: userColorList[authorEmailId] || '', // 작성자의 컬러 적용
           };
         });
         setCurrentEvents(events);
@@ -179,14 +182,20 @@ const Calendar = () => {
         }}
       >
         <ColorPicker
-          onClose={() => {
+          onClose={async () => {
             setShowModal(false);
-            console.log('컬러픽 선택하기', showModal);
+            await fetchUserColors();
           }}
         />
       </Modal>
       <div className={styles.calendarContainer}>
-        <Sidebar weekendsVisible={weekendsVisible} handleWeekendsToggle={handleWeekendsToggle} />
+        <Sidebar
+          weekendsVisible={weekendsVisible}
+          handleWeekendsToggle={handleWeekendsToggle}
+          onColorChange={() => {
+            setShowModal(true);
+          }}
+        />
         <div className={styles.calendarWrapper}>
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -215,7 +224,6 @@ const Calendar = () => {
 };
 
 const EventContent = ({ eventInfo }: { eventInfo: EventContentArg }) => {
-  console.log(eventInfo);
   return (
     <div
       style={{
@@ -233,25 +241,26 @@ const EventContent = ({ eventInfo }: { eventInfo: EventContentArg }) => {
 };
 
 const renderEventContent = (eventInfo: EventContentArg) => {
-  return (
-    <>
-      <EventContent eventInfo={eventInfo} />
-    </>
-  );
+  return <EventContent eventInfo={eventInfo} />;
 };
 
 const Sidebar = ({
   weekendsVisible,
   handleWeekendsToggle,
+  onColorChange,
 }: {
   weekendsVisible: boolean;
   handleWeekendsToggle: () => void;
+  onColorChange: () => void;
 }) => {
   return (
     <div className={styles.sidebar}>
       <div className={styles.sidebarSection}>
-        <h2>📌 사용 방법</h2>
-        <ul>
+        <h1>🎈happy vacation🎊🎆🎇✨🎉</h1>
+        <br />
+        <br />
+        <h3>📌 사용 방법</h3>
+        <ul style={{ margin: '10px 25px 35px' }}>
           <li>날짜를 선택하면 새로운 이벤트를 생성할 수 있습니다.</li>
           <li>이벤트를 드래그 & 드롭하여 이동할 수 있습니다.</li>
           <li>이벤트를 클릭하면 삭제됩니다.</li>
@@ -260,9 +269,22 @@ const Sidebar = ({
 
       <div className={styles.sidebarSection}>
         <label>
-          <input type="checkbox" checked={weekendsVisible} onChange={handleWeekendsToggle} />
-          주말 표시
+          <Input
+            type="checkbox"
+            checked={weekendsVisible}
+            onChange={handleWeekendsToggle}
+            style={{
+              width: '20px',
+              height: '20px',
+              verticalAlign: 'middle',
+              margin: '10px',
+            }}
+          />
+          주말표시
         </label>
+        <div>
+          <button onClick={onColorChange}>컬러 변경하기</button>
+        </div>
       </div>
     </div>
   );
