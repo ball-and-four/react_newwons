@@ -21,8 +21,9 @@ const Logo = ({ color = 'black' }: LogoProps) => {
 
 const LogoComponent = styled.div`
   display: inline-block;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
+  line-height: 22px;
 `;
 
 const StyledText = styled.span<{ color: string }>`

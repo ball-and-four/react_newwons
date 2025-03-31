@@ -10,14 +10,14 @@ export const PostCard = ({
   thumbnail = `${defaultImg}`,
   postTitle = 'Post Title',
   author = 'Author',
-  category = 'Category',
+  // category = 'Category',
   timestamp = 'a min ago',
   postContent = '',
 }: PostCardProps) => {
   return (
     <PostCardContainer>
       <Thumbnail href={'/posts/' + param}>
-        <Image src={thumbnail} alt="thumbnail" width={514} height={400} />
+        <Image src={thumbnail} alt="thumbnail" width={400} height={238} />
       </Thumbnail>
 
       <PostInfo>
@@ -26,15 +26,14 @@ export const PostCard = ({
             <a href={'/posts/' + param} className="title">
               {postTitle}
             </a>
-            <Meta>
-              <span className="author">{author}</span>
-              <span className="timeStamp">{timestamp}</span>
-            </Meta>
           </TitleContent>
-          <div className="category">{category}</div>
         </TitleArea>
 
         <Content href={'/posts/' + param}>{postContent}</Content>
+        <Meta>
+          <div className="author">{author}</div>
+          <div className="timeStamp">{timestamp}</div>
+        </Meta>
       </PostInfo>
     </PostCardContainer>
   );
@@ -47,10 +46,17 @@ const truncateText = `
 
 const PostCardContainer = styled.article`
   position: relative;
-  width: 516px;
-  height: 656px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  width: 400px;
+  height: 440px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
+  overflow: hidden;
+
+  &:hover {
+    opacity: 0.85;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
 `;
 
 const Thumbnail = styled.a`
@@ -59,40 +65,29 @@ const Thumbnail = styled.a`
     box-shadow: 1px solid var(--foreground-rgb) inset;
     border-radius: 8px 8px 0 0;
     object-fit: cover;
-    &:hover {
-      opacity: 0.85;
-    }
   }
 `;
 
 const PostInfo = styled.div`
-  padding: 2rem 3rem;
+  padding: 20px 24px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 256px;
 `;
 
 const TitleArea = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
   width: 100%;
+  color: var(--color-gray-02);
 
   .title {
     display: block;
-    width: 320px;
-    font-size: 24px;
+    width: 350px;
+    font-size: 22px;
     font-weight: bold;
-    line-height: 45px;
+    line-height: 180%;
     ${truncateText}
     white-space: nowrap;
-  }
-
-  .category {
-    font-size: 18px;
-    color: var(--color-blue);
-    line-height: 45px;
   }
 `;
 
@@ -102,32 +97,32 @@ const TitleContent = styled.div`
 `;
 
 const Meta = styled.div`
+  padding-top: 16px;
+  width: 100%;
   display: flex;
-  align-items: center;
   gap: 1rem;
+  font-size: 14px;
 
   .author {
-    font-size: 14px;
-    color: var(--color-lightBlue);
+    color: var(--color-blue);
   }
 
   .timeStamp {
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.5);
+    color: var(--color-gray-04);
   }
 `;
 
 const Content = styled.a`
-  padding-top: 1rem;
+  padding-top: 16px;
   width: 100%;
   height: 100%;
   vertical-align: top;
-  font-size: 18px;
-  line-height: 2rem;
+  font-size: 16px;
+  line-height: 140%;
+  color: var(--color-gray-04);
   ${truncateText}
   display: -webkit-box !important;
-  -webkit-line-clamp: 3;import { Link } from "next/link";
-
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   white-space: normal;
 `;
