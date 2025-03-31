@@ -8,7 +8,7 @@ import interactionPlugin, { EventResizeDoneArg } from '@fullcalendar/interaction
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../firebase';
 import { createEventId } from '../../utils/calendar';
@@ -27,7 +27,7 @@ interface CalendarEvent {
 
 const Calendar = () => {
   const { user } = useAuth();
-  const getEmailIdPattern = /^[^@]+/;
+  const getEmailIdPattern = useMemo(() => /^[^@]+/, []);
 
   const userEmailId = user?.email?.match(getEmailIdPattern)?.[0] || '';
 
@@ -69,7 +69,7 @@ const Calendar = () => {
         setShowModal(true);
       }
     }
-  }, [userColorList]);
+  }, [userColorList, userEmailId]);
 
   const handleDateSelect = async (selectInfo: DateSelectArg) => {
     const title = prompt('새로운 이벤트 제목을 입력하세요');
@@ -171,7 +171,7 @@ const Calendar = () => {
     };
 
     fetchEvents();
-  }, [userColorList]);
+  }, [userColorList, getEmailIdPattern]);
 
   return (
     <>
