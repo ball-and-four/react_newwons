@@ -6,7 +6,7 @@ import { HexColorPicker } from 'react-colorful';
 
 const ColorPicker = ({ onClose }: { onClose: () => void }) => {
   const { user } = useAuth();
-  const getEmailIdPattern = /^[^@]+/;
+  const getEmailIdPattern = /^([^@]+)@/;
   const userEmailId = `${user?.email?.match(getEmailIdPattern)}` || 'default';
 
   const [pickColor, setPickColor] = useState('');
