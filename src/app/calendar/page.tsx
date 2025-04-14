@@ -26,11 +26,15 @@ interface CalendarEvent {
 }
 
 const Calendar = () => {
+  const escapeEmailId = (id: string) => {
+    return String(id || '').replace(/\./g, '_'); // "." → "_"
+  };
+
   const { user } = useAuth();
   const getEmailIdPattern = useMemo(() => /^[^@]+/, []);
 
-  const userEmailId = user?.email?.match(getEmailIdPattern)?.[0] || '';
-
+  const userEmailIdAsIs = user?.email?.match(getEmailIdPattern)?.[0] || '';
+  const userEmailId = escapeEmailId(userEmailIdAsIs);
   const [weekendsVisible, setWeekendsVisible] = useState<boolean>(true);
   const [currentEvents, setCurrentEvents] = useState<CalendarEvent[]>([]);
   const [userColorList, setUserColorList] = useState<Record<string, string>>({});
@@ -100,19 +104,65 @@ const Calendar = () => {
   };
 
   const handleEventClick = async (clickInfo: EventClickArg) => {
+    if (clickInfo.event.extendedProps.authorEmail !== user?.email) {
+      alert('왜 남의 휴.가.를 삭제하려고 하시죠?');
+      return;
+    }
+
     if (confirm(`이벤트 '${clickInfo.event.title}'을(를) 삭제하시겠습니까?`)) {
+      const eventIdToDelete = clickInfo.event.id;
+
       clickInfo.event.remove();
-      const querySnapshot = await getDocs(collection(db, 'calendar'));
-      querySnapshot.forEach(async (docItem) => {
-        if (docItem.data().id === clickInfo.event.id) {
-          await deleteDoc(doc(db, 'calendar', docItem.id));
-        }
-      });
+
+      try {
+        const querySnapshot = await getDocs(collection(db, 'calendar'));
+        querySnapshot.forEach(async (docItem) => {
+          if (docItem.data().id === eventIdToDelete) {
+            await deleteDoc(doc(db, 'calendar', docItem.id));
+          }
+        });
+      } catch (error) {
+        console.error('이벤트 삭제 오류:', error);
+        alert('이벤트 삭제 중 오류가 발생했습니다.');
+      }
     }
   };
 
   const handleEventDrop = async (dropInfo: EventDropArg) => {
     const { event } = dropInfo;
+
+    if (event.extendedProps.authorEmail !== user?.email) {
+      alert('자신이 작성한 이벤트만 이동할 수 있습니다.');
+      dropInfo.revert();
+      return;
+    }
+
+    try {
+      const querySnapshot = await getDocs(collection(db, 'calendar'));
+      querySnapshot.forEach(async (docItem) => {
+        if (docItem.data().id === event.id) {
+          await updateDoc(doc(db, 'calendar', docItem.id), {
+            start: event.start?.toISOString(),
+            end: event.end?.toISOString(),
+            allDay: event.allDay,
+          });
+        }
+      });
+    } catch (error) {
+      console.error('이벤트 이동 오류:', error);
+      alert('이벤트 이동 중 오류가 발생했습니다.');
+      dropInfo.revert();
+    }
+  };
+
+  const handleEventResize = async (resizeInfo: EventResizeDoneArg) => {
+    const { event } = resizeInfo;
+
+    if (event.extendedProps.authorEmail !== user?.email) {
+      alert('자신이 작성한 이벤트만 크기를 조절할 수 있습니다.');
+      resizeInfo.revert();
+      return;
+    }
 
     try {
       const querySnapshot = await getDocs(collection(db, 'calendar'));
@@ -125,23 +175,9 @@ const Calendar = () => {
         }
       });
     } catch (error) {
-      console.error('이벤트 이동 오류:', error);
-    }
-  };
-
-  const handleEventResize = async (resizeInfo: EventResizeDoneArg) => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'calendar'));
-      querySnapshot.forEach(async (docItem) => {
-        if (docItem.data().id === resizeInfo.event.id) {
-          await updateDoc(doc(db, 'calendar', docItem.id), {
-            start: resizeInfo.event.start?.toISOString(),
-            end: resizeInfo.event.end?.toISOString(),
-          });
-        }
-      });
-    } catch (error) {
       console.error('이벤트 크기 조정 오류:', error);
+      alert('이벤트 크기 조정 중 오류가 발생했습니다.');
+      resizeInfo.revert();
     }
   };
 
@@ -151,7 +187,8 @@ const Calendar = () => {
         const querySnapshot = await getDocs(collection(db, 'calendar'));
         const events: CalendarEvent[] = querySnapshot.docs.map((doc) => {
           const eventData = doc.data();
-          const authorEmailId = eventData.authorEmail?.match(getEmailIdPattern)?.[0] || '';
+          const authorEmailIdAsIs = eventData.authorEmail?.match(getEmailIdPattern)?.[0] || '';
+          const escapedAuthorEmailId = escapeEmailId(authorEmailIdAsIs);
 
           return {
             id: eventData.id,
@@ -161,7 +198,7 @@ const Calendar = () => {
             allDay: eventData.allDay,
             author: eventData.author ?? null,
             authorEmail: eventData.authorEmail ?? null,
-            backgroundColor: userColorList[authorEmailId] || '', // 작성자의 컬러 적용
+            backgroundColor: userColorList[escapedAuthorEmailId] || '',
           };
         });
         setCurrentEvents(events);
@@ -170,7 +207,9 @@ const Calendar = () => {
       }
     };
 
-    fetchEvents();
+    if (Object.keys(userColorList).length > 0) {
+      fetchEvents();
+    }
   }, [userColorList, getEmailIdPattern]);
 
   return (
