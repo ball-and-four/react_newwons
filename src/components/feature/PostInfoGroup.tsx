@@ -80,7 +80,14 @@ const Profile = styled.img`
   margin-right: 16px;
 `;
 
-export const PostInfoGroup = ({ title, author, category, timestamp, href }: PostInfoProps) => {
+export const PostInfoGroup = ({
+  title,
+  author,
+  category,
+  timestamp,
+  href,
+  profile,
+}: PostInfoProps) => {
   return (
     <>
       <PostBreadCrumb>
@@ -94,11 +101,7 @@ export const PostInfoGroup = ({ title, author, category, timestamp, href }: Post
       <PostTitle>{title}</PostTitle>
       <PostInfo>
         {/* 임시 이미지 : 프로필 이미지로 대체 가능할지? */}
-        <Profile
-          src={
-            'https://image.zeta-ai.io/profile-image/fe8ae560-00e3-41d0-82c1-ac1248170f7c/32528a76-014f-489d-9883-c70763fef4fb.jpeg?w=828&q=90&f=webp'
-          }
-        />
+        <Profile src={profile} />
         <div>
           <li className="blue author">{author}</li>
           <li>{`${timestamp} · ${category}`}</li>
