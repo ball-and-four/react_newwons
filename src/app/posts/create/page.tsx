@@ -107,6 +107,7 @@ const Create = () => {
         title="Write"
         category="category"
         author={userName}
+        profile={`${user?.photoURL}`}
         timestamp={`${getCurrentTime()}`}
         href=""
       />

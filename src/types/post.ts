@@ -24,4 +24,5 @@ export interface PostInfoProps {
   category: string;
   timestamp: string;
   href: string;
+  profile: string;
 }
