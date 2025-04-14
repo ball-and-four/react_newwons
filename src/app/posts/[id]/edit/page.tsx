@@ -140,6 +140,7 @@ const Update = () => {
         author={author}
         timestamp={getCurrentTime()}
         href=""
+        profile={`${user?.photoURL}`}
       />
 
       <div className={styles.formArea}>
