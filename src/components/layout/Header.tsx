@@ -93,7 +93,9 @@ const Header = () => {
     <HeaderBox>
       {/* <Logo /> */}
       {/* 로고애니 테스트 */}
-      <LottiePlayer loop animationData={lottieJson} play />
+      <a href={'/'}>
+        <LottiePlayer loop animationData={lottieJson} play />
+      </a>
       {isLogged ? (
         <div style={{ display: 'flex', gap: '24px' }}>
           <Nav>
