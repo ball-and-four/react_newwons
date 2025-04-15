@@ -105,7 +105,7 @@ const Calendar = () => {
 
   const handleEventClick = async (clickInfo: EventClickArg) => {
     if (clickInfo.event.extendedProps.authorEmail !== user?.email) {
-      alert('왜 남의 휴.가.를 삭제하려고 하시죠?');
+      alert('왜 남의 휴.가.를 삭.제.하려고 하시죠?');
       return;
     }
 
@@ -132,7 +132,7 @@ const Calendar = () => {
     const { event } = dropInfo;
 
     if (event.extendedProps.authorEmail !== user?.email) {
-      alert('자신이 작성한 이벤트만 이동할 수 있습니다.');
+      alert('왜 남의 휴.가.를 변.경.하려고 하시죠?');
       dropInfo.revert();
       return;
     }
@@ -159,7 +159,7 @@ const Calendar = () => {
     const { event } = resizeInfo;
 
     if (event.extendedProps.authorEmail !== user?.email) {
-      alert('자신이 작성한 이벤트만 크기를 조절할 수 있습니다.');
+      alert('왜 남의 휴.가.를 변.경.하려고 하시죠?');
       resizeInfo.revert();
       return;
     }

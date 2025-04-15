@@ -38,6 +38,7 @@ export const logout = () => {
   signOut(auth)
     .then(() => {
       alert('또 오세요!');
+      window.location.href = '/';
     })
     .catch((error) => {
       console.log(error);
